@@ -1,0 +1,50 @@
+{
+  "name": "New Relic",
+  "id": "yesoreyeram-grafana-newrelic-datasource",
+  "type": "datasource",
+  "category": "apm",
+  "metrics": true,
+  "info": {
+    "version": "0.0.1",
+    "description": "Grafana New Relic DataSource",
+    "author": {
+      "name": "Sriramajeyam Sugumaran",
+      "url": "https://www.google.com/search?q=Sriramajeyam+Sugumaran"
+    },
+    "logos": {
+      "small": "assets/img/yesoreyeram-grafana-newrelic-datasource-logo.jpg",
+      "large": "assets/img/yesoreyeram-grafana-newrelic-datasource-logo.jpg"
+    },
+    "keywords": [
+      "newrelic",
+      "apm"
+    ],
+    "links": [
+      {
+        "name": "Github",
+        "url": "https://github.com/yesoreyeram/grafana-newrelic-datasource"
+      }
+    ]
+  },
+  "dependencies": {
+    "grafanaVersion": "5.2.x",
+    "plugins": []
+  },
+  "routes": [
+    {
+      "path": "insights",
+      "method": "*",
+      "url": "https://insights-api.newrelic.com/v1/accounts",
+      "headers": [
+        {
+          "name": "X-Query-Key",
+          "content": "{{.SecureJsonData.insightsApiKey}}"
+        },
+        {
+          "name": "Accept",
+          "content": "application/json"
+        }
+      ]
+    }
+  ]
+}
