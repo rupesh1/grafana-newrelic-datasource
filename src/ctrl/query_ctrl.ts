@@ -1,6 +1,7 @@
-import _ from 'lodash';
+import { defaultsDeep } from 'lodash';
 import { QueryCtrl } from 'grafana/app/plugins/sdk';
 
+// @ts-ignore
 export class NewRelicQueryCtrl extends QueryCtrl {
   static templateUrl = 'partials/query.editor.html';
   supportedServices = [{ text: 'Insights API', value: 'insights' }];
@@ -18,6 +19,6 @@ export class NewRelicQueryCtrl extends QueryCtrl {
   /** @ngInject */
   constructor($scope: any, $injector: any) {
     super($scope, $injector);
-    _.defaultsDeep(this.target, this.defaults);
+    defaultsDeep(this.target, this.defaults);
   }
 }

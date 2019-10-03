@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { each, map, filter } from 'lodash';
 
 export class InsightsResultsParser {
   output: any = {
@@ -8,7 +8,7 @@ export class InsightsResultsParser {
   };
   private handleTimeseriesResult(metadata: any, timeseriesData: any, suffix: string, timeshift: number) {
     const timeseriesMetadata = metadata.timeSeries || metadata.contents.timeSeries;
-    _.each(timeseriesMetadata.contents, (content: any, index: number) => {
+    each(timeseriesMetadata.contents, (content: any, index: number) => {
       if (content && content.function === 'percentage' && content.simple) {
         console.log('percentage results');
         const o = {
@@ -18,7 +18,7 @@ export class InsightsResultsParser {
         this.output.push(o);
       } else if (content && content.function === 'percentile') {
         console.log('percentile results');
-        _.each(content.thresholds, (threshold: any) => {
+        each(content.thresholds, (threshold: any) => {
           const o = {
             target: (content.attribute || '') + ' (' + threshold + ' %)',
             datapoints: timeseriesData.map((item: any) => [
@@ -30,7 +30,7 @@ export class InsightsResultsParser {
         });
       } else if (content && content.function === 'histogram') {
         console.log('Received Timeseries histogram');
-        _.each(timeseriesData[0].results[0].histogram, (v: any, k: any) => {
+        each(timeseriesData[0].results[0].histogram, (v: any, k: any) => {
           if (v !== v) {
             throw new Error('Error');
           }
@@ -42,7 +42,7 @@ export class InsightsResultsParser {
         });
       } else if (content.steps) {
         console.log('Step results');
-        _.each(content.steps, (step: any, stepIndex: number) => {
+        each(content.steps, (step: any, stepIndex: number) => {
           const o = {
             target: step,
             datapoints: timeseriesData.map((item: any) => [item.results[index].steps[stepIndex], item.beginTimeSeconds * 1000 + timeshift]),
@@ -72,7 +72,7 @@ export class InsightsResultsParser {
     });
   }
   constructor(results: any[]) {
-    _.each(results, (res: any) => {
+    each(results, (res: any) => {
       const response = res.result;
       if (response && response.data && response.data.metadata) {
         if (response.data.timeSeries || (response.data.current && response.data.current.timeSeries)) {
@@ -101,7 +101,7 @@ export class InsightsResultsParser {
             this.output = [];
           }
           const metadata = response.data.metadata;
-          _.each(response.data.facets, (facet: any, index: number) => {
+          each(response.data.facets, (facet: any, index: number) => {
             if (metadata.contents.timeSeries.contents.length === 0) {
               const key = metadata.contents.timeSeries.contents[0].contents.function || 'count';
               const title = facet.name || index;
@@ -111,7 +111,7 @@ export class InsightsResultsParser {
               };
               this.output.push(o);
             } else {
-              _.each(metadata.contents.timeSeries.contents, (c: any, cindex: number) => {
+              each(metadata.contents.timeSeries.contents, (c: any, cindex: number) => {
                 const key = c.simple ? c.function : c.contents.function || 'count';
                 const title = (facet.name || index) + ' ' + (c.alias || key);
                 const o = {
@@ -128,25 +128,25 @@ export class InsightsResultsParser {
           const facets = res.result.data.facets;
           const metadata = res.result.data.metadata;
           const title = metadata.facet;
-          _.each(facets, (facet: any) => {
+          each(facets, (facet: any) => {
             const output: any = {};
             output[title] = facet.name;
-            _.each(metadata.contents.contents, (content: any, index: number) => {
+            each(metadata.contents.contents, (content: any, index: number) => {
               output[content.alias || content.function] = facet.results[index][content.simple ? content.function : content.contents.function];
             });
             totalResults.push(output);
           });
           if (this.output.columns.length === 0) {
-            _.each(totalResults[0], (v: any, k: any) => {
+            each(totalResults[0], (v: any, k: any) => {
               this.output.columns.push({
                 text: k,
                 type: typeof v,
               });
             });
           }
-          _.each(totalResults, (tempRes: any) => {
+          each(totalResults, (tempRes: any) => {
             const row: any[] = [];
-            _.each(tempRes, (v: any, k: any) => {
+            each(tempRes, (v: any, k: any) => {
               row.push(v);
               if (!k) {
                 if (1 !== 1) {
@@ -169,7 +169,7 @@ export class InsightsResultsParser {
                 type: typeof response.data.results[0].steps[0],
               }
             );
-            _.each(response.data.metadata.contents[0].steps, (step: any, stepIndex: number) => {
+            each(response.data.metadata.contents[0].steps, (step: any, stepIndex: number) => {
               this.output.rows.push([step, response.data.results[0].steps[stepIndex]]);
             });
           } else if (
@@ -185,10 +185,10 @@ export class InsightsResultsParser {
             };
             const rows: any[] = [];
             let cols: any[] = [];
-            _.each(response.data.results[0].events, (event: any) => {
+            each(response.data.results[0].events, (event: any) => {
               cols = [];
               const currRow: any[] = [];
-              _.each(event, (v: any, k: any) => {
+              each(event, (v: any, k: any) => {
                 if (k === 'timestamp') {
                   cols.push({
                     text: k,
@@ -197,7 +197,7 @@ export class InsightsResultsParser {
                   currRow.push(v);
                 }
               });
-              _.each(event, (v: any, k: any) => {
+              each(event, (v: any, k: any) => {
                 if (k !== 'timestamp') {
                   cols.push({
                     text: k,
@@ -217,10 +217,10 @@ export class InsightsResultsParser {
               rows: [],
               type: 'table',
             };
-            _.each(response.data.metadata.contents, (content: any) => {
+            each(response.data.metadata.contents, (content: any) => {
               this.output.columns = [];
               if (content.columns) {
-                _.each(content.columns, (col: any) => {
+                each(content.columns, (col: any) => {
                   this.output.columns.push({
                     text: col,
                     type: typeof response.data.results[0].events[0][col],
@@ -232,9 +232,9 @@ export class InsightsResultsParser {
                 });
               }
             });
-            _.each(response.data.results[0].events, (row: any) => {
+            each(response.data.results[0].events, (row: any) => {
               const o: any[] = [];
-              _.each(response.data.metadata.contents[0].columns, (col: any) => {
+              each(response.data.metadata.contents[0].columns, (col: any) => {
                 o.push(row[col]);
               });
               this.output.rows.push(o);
@@ -276,7 +276,7 @@ export class NewrelicInsightsDataSource {
   }
 
   private doQueries(queries: any[]) {
-    return _.map(queries, (query: any) => {
+    return map(queries, (query: any) => {
       return this.doInsightsRequest(query)
         .then((result: any) => {
           return { result, query };
@@ -288,7 +288,7 @@ export class NewrelicInsightsDataSource {
   }
 
   query(options: any) {
-    const queries: any[] = _.filter(options.targets, (item: any) => {
+    const queries: any[] = filter(options.targets, (item: any) => {
       return item.hide !== true && item.insights && item.insights.nrql;
     }).map((target: any) => {
       const item: any = target.insights;

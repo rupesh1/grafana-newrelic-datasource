@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 export class NewRelicConfigCtrl {
   static templateUrl = 'partials/config.html';
   current: any;
