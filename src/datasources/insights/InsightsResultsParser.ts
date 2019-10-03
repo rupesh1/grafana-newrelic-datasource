@@ -6,69 +6,70 @@ export class InsightsResultsParser {
     rows: [],
     type: 'table',
   };
+  private pushTimeSeriesResult(target: any, datapoints: any) {
+    if (this.output.columns && this.output.rows) {
+      this.output = [];
+    }
+    const o = { target, datapoints };
+    this.output.push(o);
+  }
   private handleTimeseriesResult(metadata: any, timeseriesData: any, suffix: string, timeshift: number) {
     const timeseriesMetadata = metadata.timeSeries || metadata.contents.timeSeries;
-    timeseriesMetadata.contents.forEach((content: any, index: number) => {
-      {
-        if (content && content.function === 'percentage' && content.simple) {
-          console.log('percentage results');
-          const o = {
-            target: (content.function || '') + ' (' + content.of.function + ` of ${content.filter})`,
-            datapoints: timeseriesData.map((item: any) => [item.results[0].result, item.beginTimeSeconds * 1000 + timeshift]),
-          };
-          this.output.push(o);
-        } else if (content && content.function === 'percentile') {
-          console.log('percentile results');
-          content.thresholds.forEach((threshold: any) => {
-            const o = {
-              target: (content.attribute || '') + ' (' + threshold + ' %)',
-              datapoints: timeseriesData.map((item: any) => [
+    try {
+      timeseriesMetadata.contents.forEach((content: any, index: number) => {
+        {
+          if (content && content.function === 'percentage' && content.simple) {
+            console.log('percentage results');
+            const t = (content.function || '') + ' (' + content.of.function + ` of ${content.filter})`;
+            const d = timeseriesData.map((item: any) => [item.results[0].result, item.beginTimeSeconds * 1000 + timeshift]);
+            this.pushTimeSeriesResult(t, d);
+          } else if (content && content.function === 'percentile') {
+            console.log('percentile results');
+            content.thresholds.forEach((threshold: any) => {
+              const t = (content.attribute || '') + ' (' + threshold + ' %)';
+              const d = timeseriesData.map((item: any) => [
                 item.results[index].percentiles[threshold.toString()],
                 item.beginTimeSeconds * 1000 + timeshift,
-              ]),
-            };
-            this.output.push(o);
-          });
-        } else if (content && content.function === 'histogram') {
-          console.log('Received Timeseries histogram');
-          each(timeseriesData[0].results[0].histogram, (v: any, k: any) => {
-            const o = {
-              target: k.toString(),
-              datapoints: timeseriesData.map((item: any) => [item.results[index].histogram[k.toString()], item.beginTimeSeconds * 1000 + timeshift]),
-            };
-            this.output.push(o);
-          });
-        } else if (content.steps) {
-          console.log('Step results');
-          content.steps.forEach((step: any, stepIndex: number) => {
-            const o = {
-              target: step,
-              datapoints: timeseriesData.map((item: any) => [item.results[index].steps[stepIndex], item.beginTimeSeconds * 1000 + timeshift]),
-            };
-            this.output.push(o);
-          });
-        } else {
-          console.log('Regular Timeseries');
-          const title = (
-            (content.alias || (content.contents ? content.contents.alias || content.contents.function : content.function)) +
-            (suffix ? ` ( ${suffix.toLowerCase()} )` : '')
-          ).trim();
-          const key = content.contents
-            ? content.contents.contents
-              ? content.contents.contents.function
-              : content.contents.function
-            : content.alias || content.function;
-          const o = {
-            target: title,
-            datapoints: timeseriesData.map((item: any) => [
+              ]);
+              this.pushTimeSeriesResult(t, d);
+            });
+          } else if (content && content.function === 'histogram') {
+            console.log('Received Timeseries histogram');
+            each(timeseriesData[0].results[0].histogram, (v: any, k: any) => {
+              const t = k.toString();
+              const d = timeseriesData.map((item: any) => [item.results[index].histogram[k.toString()], item.beginTimeSeconds * 1000 + timeshift]);
+              this.pushTimeSeriesResult(t, d);
+            });
+          } else if (content.steps) {
+            console.log('Step results');
+            content.steps.forEach((step: any, stepIndex: number) => {
+              const t = step;
+              const d = timeseriesData.map((item: any) => [item.results[index].steps[stepIndex], item.beginTimeSeconds * 1000 + timeshift]);
+              this.pushTimeSeriesResult(t, d);
+            });
+          } else {
+            console.log('Regular Timeseries');
+            const title = (
+              (content.alias || (content.contents ? content.contents.alias || content.contents.function : content.function)) +
+              (suffix ? ` ( ${suffix.toLowerCase()} )` : '')
+            ).trim();
+            const key = content.contents
+              ? content.contents.contents
+                ? content.contents.contents.function
+                : content.contents.function
+              : content.alias || content.function;
+            const t = title;
+            const d = timeseriesData.map((item: any) => [
               item.results[index][key] || item.results[index].result,
               item.beginTimeSeconds * 1000 + timeshift,
-            ]),
-          };
-          this.output.push(o);
+            ]);
+            this.pushTimeSeriesResult(t, d);
+          }
         }
-      }
-    });
+      });
+    } catch (ex) {
+      console.log('Error while parsing timeseries results');
+    }
   }
   constructor(results: any[]) {
     try {
@@ -77,9 +78,6 @@ export class InsightsResultsParser {
         if (response && response.data && response.data.metadata) {
           if (response.data.timeSeries || (response.data.current && response.data.current.timeSeries)) {
             console.log(`Received results in timeseries format`);
-            if (this.output.columns && this.output.rows) {
-              this.output = [];
-            }
             if (response.data.timeSeries) {
               this.handleTimeseriesResult(response.data.metadata, response.data.timeSeries, '', 0);
             } else {
@@ -104,21 +102,15 @@ export class InsightsResultsParser {
             each(response.data.facets, (facet: any, index: number) => {
               if (metadata.contents.timeSeries.contents.length === 0) {
                 const key = metadata.contents.timeSeries.contents[0].contents.function || 'count';
-                const title = facet.name || index;
-                const o = {
-                  target: title,
-                  datapoints: facet.timeSeries.map((item: any) => [item.results[0][key], item.beginTimeSeconds * 1000]),
-                };
-                this.output.push(o);
+                const t = facet.name || index;
+                const d = facet.timeSeries.map((item: any) => [item.results[0][key], item.beginTimeSeconds * 1000]);
+                this.pushTimeSeriesResult(t, d);
               } else {
                 each(metadata.contents.timeSeries.contents, (c: any, cindex: number) => {
                   const key = c.simple ? c.function : c.contents.function || 'count';
-                  const title = (facet.name || index) + ' ' + (c.alias || key);
-                  const o = {
-                    target: title,
-                    datapoints: facet.timeSeries.map((item: any) => [item.results[cindex][key], item.beginTimeSeconds * 1000]),
-                  };
-                  this.output.push(o);
+                  const t = (facet.name || index) + ' ' + (c.alias || key);
+                  const d = facet.timeSeries.map((item: any) => [item.results[cindex][key], item.beginTimeSeconds * 1000]);
+                  this.pushTimeSeriesResult(t, d);
                 });
               }
             });
