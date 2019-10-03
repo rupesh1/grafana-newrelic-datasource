@@ -1,12 +1,13 @@
 {
   "name": "grafana-newrelic-datasource",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Grafana New Relic DataSource",
   "main": "dist/module.js",
   "scripts": {
-    "build": "grunt",
-    "jest": "jest",
-    "test": "grunt test"
+    "build": "grafana-toolkit plugin:build",
+    "test": "grafana-toolkit plugin:test",
+    "dev": "grafana-toolkit plugin:dev",
+    "watch": "grafana-toolkit plugin:dev --watch"
   },
   "repository": {
     "type": "git",
@@ -16,34 +17,17 @@
     "grafana",
     "newrelic"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "Sriramajeyam Sugumaran",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/yesoreyeram/grafana-newrelic-datasource/issues"
   },
   "homepage": "https://github.com/yesoreyeram/grafana-newrelic-datasource#readme",
   "dependencies": {
-    "lodash": "^4.17.15",
-    "q": "^1.5.1"
+    "lodash": "^4.17.15"
   },
   "devDependencies": {
-    "@types/jest": "^23.3.10",
-    "@types/lodash": "^4.14.119",
-    "@types/node": "^11.9.6",
-    "grafana-sdk-mocks": "github:grafana/grafana-sdk-mocks",
-    "grunt": "^1.0.3",
-    "grunt-contrib-clean": "^2.0.0",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-watch": "^1.1.0",
-    "grunt-run": "^0.8.1",
-    "grunt-sass": "^3.0.2",
-    "grunt-ts": "^6.0.0-beta.21",
-    "grunt-tslint": "^5.0.2",
-    "jest": "^23.6.0",
-    "load-grunt-tasks": "^4.0.0",
-    "node-sass": "^4.11.0",
-    "ts-jest": "^23.10.5",
-    "tslint": "^5.12.0",
-    "typescript": "^3.2.2"
+    "@grafana/toolkit": "^6.4.0",
+    "@types/grafana": "github:CorpGlory/types-grafana.git"
   }
 }
