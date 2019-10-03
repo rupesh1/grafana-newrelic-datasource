@@ -1,5 +1,5 @@
 import { cloneDeep, flatten, filter } from 'lodash';
-import { NewrelicInsightsDataSource } from './datasources/InsightsDataSource';
+import { NewrelicInsightsDataSource } from './datasources/insights/InsightsDataSource';
 
 export class Datasource {
   private insightsDataSource: NewrelicInsightsDataSource;
