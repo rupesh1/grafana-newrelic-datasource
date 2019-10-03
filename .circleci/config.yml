@@ -30,6 +30,3 @@ workflows:
   plugin_workflow:
     jobs:
     - build_plugin
-    - package:
-        requires:
-        - build_plugin
