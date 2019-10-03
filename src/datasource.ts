@@ -9,7 +9,7 @@ export class Datasource {
     this.insightsDataSource = new NewrelicInsightsDataSource(this.instanceSettings, this.backendSrv, this.$q);
   }
 
-  public query(options: any) {
+  query(options: any) {
     const promises: any[] = [];
     const insightsOptions = _.cloneDeep(options);
     insightsOptions.targets = _.filter(insightsOptions.targets, ['queryType', 'insights']);
@@ -24,7 +24,7 @@ export class Datasource {
     });
   }
 
-  public testDatasource() {
+  testDatasource() {
     return new Promise((resolve, reject) => {
       try {
         this.insightsDataSource
@@ -60,7 +60,7 @@ export class Datasource {
     });
   }
 
-  public metricFindQuery(query: string) {
+  metricFindQuery(query: string) {
     if (!query) {
       return Promise.resolve([]);
     }

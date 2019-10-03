@@ -1,8 +1,8 @@
 import _ from 'lodash';
 
 export class NewRelicConfigCtrl {
-  public static templateUrl = 'partials/config.html';
-  public current: any;
+  static templateUrl = 'partials/config.html';
+  current: any;
 
   /** @ngInject */
   constructor() {

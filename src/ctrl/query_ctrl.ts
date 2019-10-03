@@ -2,12 +2,12 @@ import _ from 'lodash';
 import { QueryCtrl } from 'grafana/app/plugins/sdk';
 
 export class NewRelicQueryCtrl extends QueryCtrl {
-  public static templateUrl = 'partials/query.editor.html';
-  public supported_services = [{ text: 'Insights API', value: 'insights' }];
-  public supported_formats = {
+  static templateUrl = 'partials/query.editor.html';
+  supportedServices = [{ text: 'Insights API', value: 'insights' }];
+  supportedFormats = {
     insights: [{ text: 'Time Series', value: 'timeseries' }, { text: 'Table', value: 'table' }],
   };
-  public defaults = {
+  defaults = {
     queryType: 'insights',
     insights: {
       nrql: '',

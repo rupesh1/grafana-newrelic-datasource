@@ -1,19 +1,19 @@
 import * as _ from 'lodash';
 
 export class InsightsResultsParser {
-  public output: any = {
+  output: any = {
     columns: [],
     rows: [],
     type: 'table',
   };
-  private handleTimeseriesResult(metadata: any, timeseries_data: any, suffix: string, timeshift: number) {
-    const timeseries_metadata = metadata.timeSeries || metadata.contents.timeSeries;
-    _.each(timeseries_metadata.contents, (content: any, index: number) => {
+  private handleTimeseriesResult(metadata: any, timeseriesData: any, suffix: string, timeshift: number) {
+    const timeseriesMetadata = metadata.timeSeries || metadata.contents.timeSeries;
+    _.each(timeseriesMetadata.contents, (content: any, index: number) => {
       if (content && content.function === 'percentage' && content.simple) {
         console.log('percentage results');
         const o = {
           target: (content.function || '') + ' (' + content.of.function + ` of ${content.filter})`,
-          datapoints: timeseries_data.map((item: any) => [item.results[0].result, item.beginTimeSeconds * 1000 + timeshift]),
+          datapoints: timeseriesData.map((item: any) => [item.results[0].result, item.beginTimeSeconds * 1000 + timeshift]),
         };
         this.output.push(o);
       } else if (content && content.function === 'percentile') {
@@ -21,7 +21,7 @@ export class InsightsResultsParser {
         _.each(content.thresholds, (threshold: any) => {
           const o = {
             target: (content.attribute || '') + ' (' + threshold + ' %)',
-            datapoints: timeseries_data.map((item: any) => [
+            datapoints: timeseriesData.map((item: any) => [
               item.results[index].percentiles[threshold.toString()],
               item.beginTimeSeconds * 1000 + timeshift,
             ]),
@@ -30,13 +30,13 @@ export class InsightsResultsParser {
         });
       } else if (content && content.function === 'histogram') {
         console.log('Received Timeseries histogram');
-        _.each(timeseries_data[0].results[0].histogram, (v: any, k: any) => {
+        _.each(timeseriesData[0].results[0].histogram, (v: any, k: any) => {
           if (v !== v) {
             throw new Error('Error');
           }
           const o = {
             target: k.toString(),
-            datapoints: timeseries_data.map((item: any) => [item.results[index].histogram[k.toString()], item.beginTimeSeconds * 1000 + timeshift]),
+            datapoints: timeseriesData.map((item: any) => [item.results[index].histogram[k.toString()], item.beginTimeSeconds * 1000 + timeshift]),
           };
           this.output.push(o);
         });
@@ -45,7 +45,7 @@ export class InsightsResultsParser {
         _.each(content.steps, (step: any, stepIndex: number) => {
           const o = {
             target: step,
-            datapoints: timeseries_data.map((item: any) => [item.results[index].steps[stepIndex], item.beginTimeSeconds * 1000 + timeshift]),
+            datapoints: timeseriesData.map((item: any) => [item.results[index].steps[stepIndex], item.beginTimeSeconds * 1000 + timeshift]),
           };
           this.output.push(o);
         });
@@ -62,7 +62,7 @@ export class InsightsResultsParser {
           : content.alias || content.function;
         const o = {
           target: title,
-          datapoints: timeseries_data.map((item: any) => [
+          datapoints: timeseriesData.map((item: any) => [
             item.results[index][key] || item.results[index].result,
             item.beginTimeSeconds * 1000 + timeshift,
           ]),
@@ -123,7 +123,7 @@ export class InsightsResultsParser {
             }
           });
         } else if (response.data.facets) {
-          const total_results: any[] = [];
+          const totalResults: any[] = [];
           console.log(`Received results in table format`);
           const facets = res.result.data.facets;
           const metadata = res.result.data.metadata;
@@ -134,19 +134,19 @@ export class InsightsResultsParser {
             _.each(metadata.contents.contents, (content: any, index: number) => {
               output[content.alias || content.function] = facet.results[index][content.simple ? content.function : content.contents.function];
             });
-            total_results.push(output);
+            totalResults.push(output);
           });
           if (this.output.columns.length === 0) {
-            _.each(total_results[0], (v: any, k: any) => {
+            _.each(totalResults[0], (v: any, k: any) => {
               this.output.columns.push({
                 text: k,
                 type: typeof v,
               });
             });
           }
-          _.each(total_results, (temp_res: any) => {
+          _.each(totalResults, (tempRes: any) => {
             const row: any[] = [];
-            _.each(temp_res, (v: any, k: any) => {
+            _.each(tempRes, (v: any, k: any) => {
               row.push(v);
               if (!k) {
                 if (1 !== 1) {
@@ -187,14 +187,14 @@ export class InsightsResultsParser {
             let cols: any[] = [];
             _.each(response.data.results[0].events, (event: any) => {
               cols = [];
-              const curr_row: any[] = [];
+              const currRow: any[] = [];
               _.each(event, (v: any, k: any) => {
                 if (k === 'timestamp') {
                   cols.push({
                     text: k,
                     type: typeof v,
                   });
-                  curr_row.push(v);
+                  currRow.push(v);
                 }
               });
               _.each(event, (v: any, k: any) => {
@@ -203,10 +203,10 @@ export class InsightsResultsParser {
                     text: k,
                     type: k === 'appId' ? 'string' : typeof v,
                   });
-                  curr_row.push(v);
+                  currRow.push(v);
                 }
               });
-              rows.push(curr_row);
+              rows.push(currRow);
             });
             this.output.columns = cols;
             this.output.rows = rows;
@@ -258,14 +258,14 @@ export class NewrelicInsightsDataSource {
   }
 
   private doInsightsRequest(options: any, maxRetries = 1) {
-    const query_params = Object.keys(options)
+    const queryParams = Object.keys(options)
       .filter(k => ['nrql'].indexOf(k) > -1)
       .map(k => `${k}=${encodeURI(options[k])}`)
       .join('&');
     return this.backendSrv
       .datasourceRequest({
         method: 'GET',
-        url: this.url + `/${this.insightsAccountID}/query?${query_params}`,
+        url: this.url + `/${this.insightsAccountID}/query?${queryParams}`,
       })
       .catch((error: any) => {
         if (maxRetries > 0) {
@@ -287,7 +287,7 @@ export class NewrelicInsightsDataSource {
     });
   }
 
-  public query(options: any) {
+  query(options: any) {
     const queries: any[] = _.filter(options.targets, (item: any) => {
       return item.hide !== true && item.insights && item.insights.nrql;
     }).map((target: any) => {

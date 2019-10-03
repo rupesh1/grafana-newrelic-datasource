@@ -309,7 +309,13 @@ describe('Query with multiple series Funnel', () => {
   });
 });
 describe('Query with single series and compare with type', () => {
-  const query = `SELECT count(*) as 'Number of orders' from MobileEvent where EventName = 'CreateOrder' TIMESERIES since today COMPARE WITH 1 week ago`;
+  const query = `
+    SELECT count(*) as 'Number of orders'
+    FROM MobileEvent
+    WHERE EventName = 'CreateOrder'
+    TIMESERIES since today
+    COMPARE WITH 1 week ago
+  `;
   const response: any = {
     current: {
       total: { results: [{ count: 78665 }], beginTimeSeconds: 1569024073, endTimeSeconds: 1569105073, inspectedCount: 78665 },
