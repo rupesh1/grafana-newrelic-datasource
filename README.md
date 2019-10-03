@@ -5,6 +5,8 @@ Grafana DataSource Plugin to connect with NewRelic APM.
 
 **Note:** This is not official plugin from Grafana / NewRelic. For full support use [official plugin from Grafana](https://grafana.com/grafana/plugins/grafana-newrelic-datasource)
 
+[![CircleCI](https://circleci.com/gh/yesoreyeram/grafana-newrelic-datasource/tree/master.svg?style=svg)](https://circleci.com/gh/yesoreyeram/grafana-newrelic-datasource/tree/master)
+
 # Screnshots
 
 ![image](https://user-images.githubusercontent.com/153843/65573268-48a3e380-df62-11e9-887a-98a940f4479d.png)
