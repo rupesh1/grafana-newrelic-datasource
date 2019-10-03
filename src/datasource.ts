@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import { cloneDeep, flatten, filter } from 'lodash';
 import { NewrelicInsightsDataSource } from './datasources/InsightsDataSource';
 
 export class Datasource {
@@ -11,8 +11,8 @@ export class Datasource {
 
   query(options: any) {
     const promises: any[] = [];
-    const insightsOptions = _.cloneDeep(options);
-    insightsOptions.targets = _.filter(insightsOptions.targets, ['queryType', 'insights']);
+    const insightsOptions = cloneDeep(options);
+    insightsOptions.targets = filter(insightsOptions.targets, ['queryType', 'insights']);
     if (insightsOptions.targets.length > 0) {
       const insightsPromise = this.insightsDataSource.query(insightsOptions);
       if (insightsPromise) {
@@ -20,7 +20,7 @@ export class Datasource {
       }
     }
     return Promise.all(promises).then(results => {
-      return { data: _.flatten(results) };
+      return { data: flatten(results) };
     });
   }
 
@@ -42,14 +42,14 @@ export class Datasource {
               },
             ],
           })
-          .then(result => {
+          .then((result: any) => {
             if (result) {
               resolve({ message: 'Successfully Queried from Newrelic', status: 'success' });
             } else {
               reject({ message: 'Failed to Connect', status: 'error' });
             }
           })
-          .catch(ex => {
+          .catch((ex: any) => {
             console.log(ex);
             reject({ message: 'Failed to Connect', status: 'error' });
           });
