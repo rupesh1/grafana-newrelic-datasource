@@ -107,10 +107,14 @@ export class InsightsResultsParser {
                 const d = facet.timeSeries.map((item: any) => [item.results[0][key], item.beginTimeSeconds * 1000]);
                 this.pushTimeSeriesResult(t, d);
               } else {
-                each(metadata.contents.timeSeries.contents, (c: any, cindex: number) => {
-                  let key = c.simple ? c.function : c.contents.function || 'count';
+                each(metadata.contents.timeSeries.contents, (content: any, cindex: number) => {
+                  let key = content.simple
+                    ? content.function
+                    : content.contents.contents
+                    ? content.contents.contents.function
+                    : content.contents.function;
                   key = key === 'uniquecount' ? 'uniqueCount' : key;
-                  const t = (facet.name || index) + ' ' + (c.alias || key);
+                  const t = (facet.name || index) + ' ' + (content.alias || key);
                   const d = facet.timeSeries.map((item: any) => [item.results[cindex][key], item.beginTimeSeconds * 1000]);
                   this.pushTimeSeriesResult(t, d);
                 });
