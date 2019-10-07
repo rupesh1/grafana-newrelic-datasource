@@ -101,13 +101,16 @@ export class InsightsResultsParser {
             const metadata = response.data.metadata;
             each(response.data.facets, (facet: any, index: number) => {
               if (metadata.contents.timeSeries.contents.length === 0) {
-                const key = metadata.contents.timeSeries.contents[0].contents.function || 'count';
+                let key = metadata.contents.timeSeries.contents[0].contents.function || 'count';
+                key = key === 'uniquecount' ? 'uniqueCount' : key;
                 const t = facet.name || index;
                 const d = facet.timeSeries.map((item: any) => [item.results[0][key], item.beginTimeSeconds * 1000]);
                 this.pushTimeSeriesResult(t, d);
               } else {
                 each(metadata.contents.timeSeries.contents, (c: any, cindex: number) => {
-                  const key = c.simple ? c.function : c.contents.function || 'count';
+                  console.log(c.simple, c.function);
+                  let key = c.simple ? c.function : c.contents.function || 'count';
+                  key = key === 'uniquecount' ? 'uniqueCount' : key;
                   const t = (facet.name || index) + ' ' + (c.alias || key);
                   const d = facet.timeSeries.map((item: any) => [item.results[cindex][key], item.beginTimeSeconds * 1000]);
                   this.pushTimeSeriesResult(t, d);
@@ -124,7 +127,9 @@ export class InsightsResultsParser {
               const output: any = {};
               output[title] = facet.name;
               each(metadata.contents.contents, (content: any, index: number) => {
-                output[content.alias || content.function] = facet.results[index][content.simple ? content.function : content.contents.function];
+                let key = content.simple ? content.function : content.contents.function;
+                key = key === 'uniquecount' ? 'uniqueCount' : key;
+                output[content.alias || content.function] = facet.results[index][key];
               });
               totalResults.push(output);
             });

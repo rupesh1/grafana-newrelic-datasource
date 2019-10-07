@@ -7,15 +7,10 @@ Grafana DataSource Plugin to connect with NewRelic APM.
 
 [![CircleCI](https://circleci.com/gh/yesoreyeram/grafana-newrelic-datasource/tree/master.svg?style=svg)](https://circleci.com/gh/yesoreyeram/grafana-newrelic-datasource/tree/master)
 
-# Screnshots
-
 ![image](https://user-images.githubusercontent.com/153843/65573268-48a3e380-df62-11e9-887a-98a940f4479d.png)
 
-![image](https://user-images.githubusercontent.com/153843/65573477-ded80980-df62-11e9-9534-0c07f445fdcc.png)
+![image](https://user-images.githubusercontent.com/153843/66305832-1a29ef00-e8f8-11e9-8c90-08cc7143619e.png)
 
-![image](https://user-images.githubusercontent.com/153843/65573650-41c9a080-df63-11e9-8102-181a36b23eab.png)
-
-![image](https://user-images.githubusercontent.com/153843/65573670-4ee68f80-df63-11e9-825a-5ee469153a7d.png)
 
 # Configuration 
 
@@ -49,10 +44,24 @@ When choosing Table Result format, your query will be updated with the following
 
 * ` SINCE ${options.range.from} UNTIL ${options.range.to} ` will be appended to your query , if you dont have **SINCE** / **UNTIL** keyword in your query. This means, you dont need to specify any time filter in queries if you want to use the Grafana's timefilter. Still if you need to hardcode any time filter, you can still use  **SINCE** / **UNTIL**  in your queries.
 
+
+**NOTE:** If your query returns uniqueCount, make sure you are using "Table format" instead "Timeseries" to get accurate results.
+
 # Known Issues
 
 * This is not official plugin from Grafana / NewRelic. For full support use [official plugin from Grafana](https://grafana.com/grafana/plugins/grafana-newrelic-datasource)
 
 * NewRelic API does have overload protection. If that happens, you’ll see an error 429 (“Too Many Requests”) in the API response. Read more details [here](https://docs.newrelic.com/docs/apis/rest-api-v2/requirements/api-overload-protection-handling-429-errors)
 
-* Differnet format of insights query results were tested. But still there can be formats unhandled. If you see such unhandled result format, Create a bug [here](https://github.com/yesoreyeram/grafana-newrelic-datasource/issues/new) and let us know about it.
+* Differnet format of insights query results were tested. But still there can be formats unhandled. If you see such unhandled result format, Create a bug [here](https://github.com/yesoreyeram/grafana-newrelic-datasource/issues/new) and so we can fixt its.
+
+
+# Screnshots
+
+
+![image](https://user-images.githubusercontent.com/153843/65573650-41c9a080-df63-11e9-8102-181a36b23eab.png)
+
+
+![image](https://user-images.githubusercontent.com/153843/65573477-ded80980-df62-11e9-9534-0c07f445fdcc.png)
+
+![image](https://user-images.githubusercontent.com/153843/65573670-4ee68f80-df63-11e9-825a-5ee469153a7d.png)
