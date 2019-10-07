@@ -1,15 +1,15 @@
 import { ctx, getInsightsQueryOptions, CONFIG } from './index';
 
 const query = `
-    SELECT 
-        uniqueCount(customerIdentifier) 
-    from 
-        AjaxRequest 
-    where 
-        appName like '%-prod%' and 
-        requestUrl like '%/api/orders' and 
-        httpResponseCode not in (0, 200, 201) 
-    facet 
+    SELECT
+        uniqueCount(customerIdentifier)
+    from
+        AjaxRequest
+    where
+        appName like '%-prod%' and
+        requestUrl like '%/api/orders' and
+        httpResponseCode not in (0, 200, 201)
+    facet
         httpResponseCode
 `;
 

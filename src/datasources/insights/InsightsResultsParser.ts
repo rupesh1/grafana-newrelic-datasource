@@ -188,7 +188,7 @@ export class InsightsResultsParser {
                 each(event, (v: any, k: any) => {
                   if (k === 'timestamp') {
                     cols.push({
-                      text: k,
+                      text: 'Time',
                       type: typeof v,
                     });
                     currRow.push(v);
