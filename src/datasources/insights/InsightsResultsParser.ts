@@ -193,19 +193,53 @@ export class InsightsResultsParser {
       totalResults.push(output);
     });
     if (this.output.columns.length === 0) {
-      each(totalResults[0], (v: any, k: any) => {
-        this.output.columns.push({
-          text: k,
-          type: typeof v,
+      if (metadata.facet) {
+        each(totalResults[0], (v: any, k: any) => {
+          if (k === metadata.facet) {
+            this.output.columns.push({
+              text: k,
+              type: typeof v,
+            });
+          }
         });
-      });
+        each(totalResults[0], (v: any, k: any) => {
+          if (k !== metadata.facet) {
+            this.output.columns.push({
+              text: k,
+              type: typeof v,
+            });
+          }
+        });
+      } else {
+        each(totalResults[0], (v: any, k: any) => {
+          this.output.columns.push({
+            text: k,
+            type: typeof v,
+          });
+        });
+      }
     }
     each(totalResults, (tempRes: any) => {
-      const row: any[] = [];
-      each(tempRes, (v: any, k: any) => {
-        row.push(v);
-      });
-      this.output.rows.push(row);
+      if (metadata.facet) {
+        const row: any[] = [];
+        each(tempRes, (v: any, k: any) => {
+          if (k === metadata.facet) {
+            row.push(v);
+          }
+        });
+        each(tempRes, (v: any, k: any) => {
+          if (k !== metadata.facet) {
+            row.push(v);
+          }
+        });
+        this.output.rows.push(row);
+      } else {
+        const row: any[] = [];
+        each(tempRes, (v: any, k: any) => {
+          row.push(v);
+        });
+        this.output.rows.push(row);
+      }
     });
   }
   constructor(results: any[]) {
