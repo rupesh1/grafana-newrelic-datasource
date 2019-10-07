@@ -6,7 +6,7 @@ export class NewrelicInsightsDataSource {
   private insightsAccountID: string;
 
   /** @ngInject */
-  constructor(private instanceSettings: any, private backendSrv: any, private $q: any) {
+  constructor(private instanceSettings: any, private backendSrv: any, private templateSrv: any, private $q: any) {
     this.url = this.instanceSettings.url + '/insights';
     this.insightsAccountID = this.instanceSettings.jsonData.insightsAccountID;
   }
@@ -57,6 +57,7 @@ export class NewrelicInsightsDataSource {
             item.nrql += ' timeseries auto ';
           }
         }
+        item.nrql = this.templateSrv.replace(item.nrql, options.scopedVars);
         return item;
       });
     if (!queries || queries.length === 0) {

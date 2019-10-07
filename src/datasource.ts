@@ -5,8 +5,8 @@ export class Datasource {
   private insightsDataSource: NewrelicInsightsDataSource;
 
   /** @ngInject */
-  constructor(private instanceSettings: any, private backendSrv: any, private $q: any) {
-    this.insightsDataSource = new NewrelicInsightsDataSource(this.instanceSettings, this.backendSrv, this.$q);
+  constructor(private instanceSettings: any, private backendSrv: any, private templateSrv: any, private $q: any) {
+    this.insightsDataSource = new NewrelicInsightsDataSource(this.instanceSettings, this.backendSrv, this.templateSrv, this.$q);
   }
 
   query(options: any) {

@@ -9,6 +9,9 @@ export const CONFIG = {
 
 export const ctx: any = {
   backendSrv: {},
+  templateSrv: {
+    replace: () => {},
+  },
   $q: Q,
   instanceSettings: {
     jsonData: {
@@ -16,7 +19,7 @@ export const ctx: any = {
     },
   },
 };
-ctx.ds = new NewrelicInsightsDataSource(ctx.instanceSettings, ctx.backendSrv, ctx.$q);
+ctx.ds = new NewrelicInsightsDataSource(ctx.instanceSettings, ctx.backendSrv, ctx.templateSrv, ctx.$q);
 
 export const getInsightsQueryOptions = (queries: string[], resultFormat: string) => {
   const o: any = {
