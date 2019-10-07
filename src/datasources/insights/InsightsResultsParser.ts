@@ -108,7 +108,6 @@ export class InsightsResultsParser {
                 this.pushTimeSeriesResult(t, d);
               } else {
                 each(metadata.contents.timeSeries.contents, (c: any, cindex: number) => {
-                  console.log(c.simple, c.function);
                   let key = c.simple ? c.function : c.contents.function || 'count';
                   key = key === 'uniquecount' ? 'uniqueCount' : key;
                   const t = (facet.name || index) + ' ' + (c.alias || key);
@@ -127,7 +126,11 @@ export class InsightsResultsParser {
               const output: any = {};
               output[title] = facet.name;
               each(metadata.contents.contents, (content: any, index: number) => {
-                let key = content.simple ? content.function : content.contents.function;
+                let key = content.simple
+                  ? content.function
+                  : content.contents.contents
+                  ? content.contents.contents.function
+                  : content.contents.function;
                 key = key === 'uniquecount' ? 'uniqueCount' : key;
                 output[content.alias || content.function] = facet.results[index][key];
               });
@@ -145,11 +148,6 @@ export class InsightsResultsParser {
               const row: any[] = [];
               each(tempRes, (v: any, k: any) => {
                 row.push(v);
-                if (!k) {
-                  if (1 !== 1) {
-                    console.log('Do Nothing');
-                  }
-                }
               });
               this.output.rows.push(row);
             });
