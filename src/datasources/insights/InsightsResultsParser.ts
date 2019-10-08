@@ -196,6 +196,73 @@ export class InsightsResultsParser {
       this.output.rows.push(o);
     });
   }
+  private handleSingleStateWithHistory(responseData: any) {
+    console.log('Single stat with history');
+    this.output = {
+      columns: [],
+      rows: [],
+      type: 'table',
+    };
+    this.output.columns.push({
+      text: 'stat',
+      type: 'string',
+    });
+    each(responseData.metadata.contents.contents, content => {
+      this.output.columns.push({
+        type: 'string',
+        text: content.function,
+      });
+    });
+    each(responseData.current.results, result => {
+      const row: any[] = [];
+      row.push('Current');
+      each(responseData.metadata.contents.contents, content => {
+        row.push(result[content.function]);
+      });
+      this.output.rows.push(row);
+    });
+    each(responseData.previous.results, result => {
+      const row: any[] = [];
+      row.push(responseData.metadata.rawCompareWith || 'Previous');
+      each(responseData.metadata.contents.contents, content => {
+        row.push(result[content.function]);
+      });
+      this.output.rows.push(row);
+    });
+  }
+  private handleMultiStatWithoutHistory(responseData: any) {
+    console.log('Multiple stats without history');
+    this.output = {
+      columns: [],
+      rows: [],
+      type: 'table',
+    };
+    this.output.columns.push({
+      text: 'stat',
+      type: 'string',
+    });
+    this.output.columns.push({
+      text: 'value',
+      type: 'number',
+    });
+    each(responseData.metadata.contents, (content, cindex) => {
+      const row: any[] = [];
+      row.push(content.alias || content.contents.alias);
+      let key = 'count';
+      if (content.contents) {
+        if (content.contents.contents) {
+          key = content.contents.contents.function;
+        } else {
+          key = content.contents.function;
+        }
+      } else {
+        key = content.function || 'count';
+      }
+      key = key === 'uniquecount' ? 'uniqueCount' : key;
+      row.push(responseData.results[cindex][key]);
+      this.output.rows.push(row);
+    });
+  }
   private handleTableResults(res: any) {
     console.log(`Received results in table format`);
     const totalResults: any[] = [];
@@ -304,12 +371,18 @@ export class InsightsResultsParser {
                 this.handleEventsTypeResults(responseData);
               } else if (responseData.metadata.contents[0].function === 'uniques') {
                 this.handleUniquesTypeResults(responseData);
+              } else if (responseData.metadata.contents.length > 0) {
+                this.handleMultiStatWithoutHistory(responseData);
               } else {
                 console.log('Result type not handled');
               }
             } else {
               this.handleResultsTypeResults(responseData);
             }
+          } else if (responseData.current && responseData.previous) {
+            this.handleSingleStateWithHistory(responseData);
+          } else {
+            console.log('This format of result is not handled yet');
           }
         }
       });
