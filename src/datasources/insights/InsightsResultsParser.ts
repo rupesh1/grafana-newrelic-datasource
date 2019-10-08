@@ -64,11 +64,12 @@ export class InsightsResultsParser {
     const title1 = content.alias || (content.contents ? content.contents.alias || content.contents.function : content.function);
     const title2 = suffix ? ` ( ${suffix.toLowerCase()} )` : '';
     const title = (title1 + title2).trim();
-    const key = content.contents
+    let key = content.contents
       ? content.contents.contents
         ? content.contents.contents.function
         : content.contents.function
       : content.alias || content.function;
+    key = key === 'uniquecount' ? 'uniqueCount' : key;
     const t = title;
     const d = timeseriesData.map((item: any) => [item.results[index][key] || item.results[index].result, item.beginTimeSeconds * 1000 + timeshift]);
     this.pushTimeSeriesResult(t, d);
