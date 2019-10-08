@@ -176,6 +176,26 @@ export class InsightsResultsParser {
       this.output.rows.push(o);
     });
   }
+  private handleUniquesTypeResults(responseData: any) {
+    console.log('Uniques Type');
+    this.output = {
+      columns: [],
+      rows: [],
+      type: 'table',
+    };
+    each(responseData.metadata.contents, (content: any) => {
+      this.output.columns = [];
+      this.output.columns.push({
+        text: content.attribute,
+        type: 'string',
+      });
+    });
+    each(responseData.results[0].members, (row: any) => {
+      const o: any[] = [];
+      o.push(row);
+      this.output.rows.push(o);
+    });
+  }
   private handleTableResults(res: any) {
     console.log(`Received results in table format`);
     const totalResults: any[] = [];
@@ -282,6 +302,10 @@ export class InsightsResultsParser {
                 this.handleFunnelTypeResults(responseData);
               } else if (responseData.metadata.contents[0].function === 'events') {
                 this.handleEventsTypeResults(responseData);
+              } else if (responseData.metadata.contents[0].function === 'uniques') {
+                this.handleUniquesTypeResults(responseData);
+              } else {
+                console.log('Result type not handled');
               }
             } else {
               this.handleResultsTypeResults(responseData);
