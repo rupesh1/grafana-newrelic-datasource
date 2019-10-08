@@ -47,6 +47,19 @@ When choosing Table Result format, your query will be updated with the following
 
 **NOTE:** If your query returns uniqueCount, make sure you are using "Table format" instead "Timeseries" to get accurate results.
 
+# Metric Find Query / Variable Query
+
+Use the one of the following queries in the `Query` field in the Variable edit view.
+
+| Name                               | Description                                                |
+| ---------------------------------- | ---------------------------------------------------------- |
+| _Insights(query)_                  | Returns results for the query .                            |
+
+Examples:
+
+- Gets distinct list of app names: `Insights(SELECT uniques(appName) FROM Mobile)`
+
+
 # Known Issues
 
 * This is not official plugin from Grafana / NewRelic. For full support use [official plugin from Grafana](https://grafana.com/grafana/plugins/grafana-newrelic-datasource)
@@ -61,7 +74,8 @@ When choosing Table Result format, your query will be updated with the following
 
 ![image](https://user-images.githubusercontent.com/153843/65573650-41c9a080-df63-11e9-8102-181a36b23eab.png)
 
-
 ![image](https://user-images.githubusercontent.com/153843/65573477-ded80980-df62-11e9-9534-0c07f445fdcc.png)
 
 ![image](https://user-images.githubusercontent.com/153843/65573670-4ee68f80-df63-11e9-825a-5ee469153a7d.png)
+
+![Variable Query Support](https://user-images.githubusercontent.com/153843/66364629-4f7b1f00-e982-11e9-8daf-f92fe5bd71f5.png)

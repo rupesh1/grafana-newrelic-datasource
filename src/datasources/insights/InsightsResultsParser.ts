@@ -317,4 +317,16 @@ export class InsightsResultsParser {
       console.log('Error while parsing the results', ex);
     }
   }
+  getResultsAsVariablesList() {
+    const returnvalues: any[] = [];
+    each(this.output.rows, row => {
+      each(row, col => {
+        returnvalues.push({
+          text: col,
+          value: col,
+        });
+      });
+    });
+    return returnvalues;
+  }
 }

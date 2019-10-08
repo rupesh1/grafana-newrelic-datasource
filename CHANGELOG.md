@@ -3,6 +3,7 @@ CHANGELOG
 
 | Version | Changes                                                    |
 | --------|------------------------------------------------------------|
+| 0.0.4   | Metric Find query support                                  |
 | 0.0.3   | Template variables support                                 |
 |         | `Uniques` format support                                   |
 | 0.0.2   | Grafana Toolkit implemented                                |  

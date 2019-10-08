@@ -64,6 +64,10 @@ export class Datasource {
     if (!query) {
       return Promise.resolve([]);
     }
+    const insightsResult = this.insightsDataSource.metricFindQuery(query);
+    if (insightsResult) {
+      return insightsResult;
+    }
     return Promise.resolve([]);
   }
 }

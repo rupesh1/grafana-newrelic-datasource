@@ -69,4 +69,20 @@ export class NewrelicInsightsDataSource {
       return responseParser.output;
     });
   }
+
+  metricFindQuery(query: string) {
+    if (query.startsWith(`Insights(`) && query.endsWith(`)`)) {
+      const insightsQuery = query.replace(`Insights(`, ``).slice(0, -1);
+      const queryOption = {
+        nrql: this.templateSrv.replace(insightsQuery),
+        format: 'table',
+      };
+      const promises = this.doQueries([queryOption]);
+      return this.$q.all(promises).then((results: any) => {
+        const responseParser = new InsightsResultsParser(results);
+        return responseParser.getResultsAsVariablesList();
+      });
+    }
+    return undefined;
+  }
 }
