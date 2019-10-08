@@ -79,3 +79,47 @@ Examples:
 ![image](https://user-images.githubusercontent.com/153843/65573670-4ee68f80-df63-11e9-825a-5ee469153a7d.png)
 
 ![Variable Query Support](https://user-images.githubusercontent.com/153843/66364629-4f7b1f00-e982-11e9-8daf-f92fe5bd71f5.png)
+
+# Advance usecases - Funnel 
+
+NewRelic funnel can be represented in grafana as table or funnel like visualization using panels such as [grafana vue html panel](https://github.com/westc/grafana-vuehtml-panel)
+
+Below example shows the query behind the funnel and its setup using vue html panel.
+
+in NewRelic
+
+![image](https://user-images.githubusercontent.com/153843/66366461-691f6500-e988-11e9-8c25-f528816d55df.png)
+
+in Grafana
+
+![image](https://user-images.githubusercontent.com/153843/66366481-79cfdb00-e988-11e9-85ba-bf38b43a75b0.png)
+
+NRQL
+
+```
+SELECT funnel(
+    session, 
+    where requestUrl like '%/api_commerce/bag/v%/%/checkout' as 'Enter Checkout', 
+    where requestUrl like '%/api_finance/paymentoptions/v%/paymentmethods%' as 'Payment', 
+    where requestUrl like '%/api_commerce/order/v%/orders/createorder%' and httpResponseCode >= 200 and httpResponseCode < 300 as 'Orders' 
+)  
+FROM AjaxRequest where appId = '111111'
+```
+
+VUE HTML
+
+```
+<table style="width:100%">
+  <tr v-for="(row,index) in dataset[0].rows" v-bind:key="index" style="padding:20px;">
+    <td style="padding:10px;">{{row.session}}</td>
+    <td style="padding:10px 0px;"> {{row.value}}</td>
+    <td style="width:50%;padding:10px 0px;text-align:center;">
+      <div style="width:100%;background:red;">
+        <div  v-bind:style="{ 'width': (Math.round(row.value / dataset[0].rows[0].value * 100)+'%') ,  'background': 'green'}">&nbsp;</div>
+      </div>
+    </td>
+    <td style="padding:10px 0px;text-align:center;">{{ Math.round(row.value / dataset[0].rows[0].value * 100) }}%</td>
+  </tr>
+</table>
+```
+
