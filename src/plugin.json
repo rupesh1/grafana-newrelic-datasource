@@ -5,7 +5,8 @@
   "category": "apm",
   "metrics": true,
   "info": {
-    "version": "0.0.5",
+    "version": "%VERSION%",
+    "updated": "%TODAY%",
     "description": "Grafana New Relic DataSource",
     "author": {
       "name": "Sriramajeyam Sugumaran",

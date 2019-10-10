@@ -6,6 +6,7 @@
   "metrics": true,
   "info": {
     "version": "0.0.5",
+    "updated": "2019-10-10",
     "description": "Grafana New Relic DataSource",
     "author": {
       "name": "Sriramajeyam Sugumaran",
