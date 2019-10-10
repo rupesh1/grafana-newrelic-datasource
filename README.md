@@ -123,3 +123,30 @@ VUE HTML
 </table>
 ```
 
+# Advance Usecases - Synthetic user journey
+
+Synthetic user journey / healthecheck can be replicated in grafana using [Discrete panel plugin](https://github.com/NatelEnergy/grafana-discrete-panel/tree/v0.0.9) as shown below
+
+
+NRQL Query
+
+`
+SELECT
+     (
+          filter(count(*),WHERE result = 'SUCCESS')
+        / filter(count(*), WHERE result IN ('SUCCESS','FAILED'))
+        * 100
+    ) as 'Success Rate'
+FROM SyntheticCheck
+WHERE monitorName like 'App Support%Checkout Journey'
+FACET monitorName
+TIMESERIES 10 minutes
+`
+
+Output in discrete panel
+
+![image](https://user-images.githubusercontent.com/153843/66565655-e3074800-eb5a-11e9-9f44-2588d7d5730d.png)
+
+You can also represent the above output with regular graph panel . Example shown below
+
+![image](https://user-images.githubusercontent.com/153843/66565866-6c1e7f00-eb5b-11e9-9451-cda7bb10011b.png)

@@ -1,5 +1,13 @@
 import { each } from 'lodash';
 
+const getKey = (content: any): string => {
+  let key = '';
+  key = content.simple ? content.function : content.contents.contents ? content.contents.contents.function : content.contents.function;
+  key = key === 'uniquecount' ? 'uniqueCount' : key;
+  key = key === 'binop' ? 'result' : key;
+  return key;
+};
+
 export class InsightsResultsParser {
   output: any = {
     columns: [],
@@ -52,8 +60,7 @@ export class InsightsResultsParser {
   }
   private handleMultiColumnFacetResults(metadata: any, facet: any, index: number) {
     each(metadata.contents.timeSeries.contents, (content: any, cindex: number) => {
-      let key = content.simple ? content.function : content.contents.contents ? content.contents.contents.function : content.contents.function;
-      key = key === 'uniquecount' ? 'uniqueCount' : key;
+      const key = getKey(content);
       const t = (facet.name || index) + ' ' + (content.alias || key);
       const d = facet.timeSeries.map((item: any) => [item.results[cindex][key], item.beginTimeSeconds * 1000]);
       this.pushTimeSeriesResult(t, d);
