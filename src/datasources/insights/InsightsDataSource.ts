@@ -14,7 +14,7 @@ export class NewrelicInsightsDataSource {
   private doInsightsRequest(options: any, maxRetries = 1) {
     const queryParams = Object.keys(options)
       .filter(k => ['nrql'].indexOf(k) > -1)
-      .map(k => `${k}=${encodeURI(options[k])}`)
+      .map(k => `${k}=${encodeURIComponent(options[k])}`)
       .join('&');
     return this.backendSrv
       .datasourceRequest({
