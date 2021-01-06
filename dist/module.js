@@ -915,12 +915,12 @@ function () {
           colKeys.add(k);
           cols.push({
             text: 'Time',
-            type: _typeof(v)
+            type: _typeof(new Date(0))
           });
         }
       });
       Object(lodash__WEBPACK_IMPORTED_MODULE_0__["each"])(event, function (v, k) {
-        if (!colKeys.has(k) && k !== 'timestamp') {
+        if (!colKeys.has(k)) {
           colKeys.add(k);
           cols.push({
             text: k,
@@ -933,8 +933,11 @@ function () {
     Object(lodash__WEBPACK_IMPORTED_MODULE_0__["each"])(responseData.results[0].events, function (event) {
       var currRow = [];
       cols.forEach(function (col) {
-        var v = event[col.text];
-        currRow.push(v);
+        if (col.text === 'Time') {
+          currRow.push(new Date(event['timestamp']));
+        } else {
+          currRow.push(event[col.text]);
+        }
       });
       rows.push(currRow);
     });

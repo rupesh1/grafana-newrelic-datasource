@@ -136,12 +136,12 @@ export class InsightsResultsParser {
           colKeys.add(k);
           cols.push({
             text: 'Time',
-            type: typeof v,
+            type: typeof new Date(0),
           });
         }
       });
       each(event, (v: any, k: any) => {
-        if (!colKeys.has(k) && k !== 'timestamp') {
+        if (!colKeys.has(k)) {
           colKeys.add(k);
           cols.push({
             text: k,
@@ -154,8 +154,11 @@ export class InsightsResultsParser {
     each(responseData.results[0].events, (event: any) => {
       const currRow: any[] = [];
       cols.forEach(col => {
-        const v = event[col.text];
-        currRow.push(v);
+        if (col.text === 'Time') {
+          currRow.push(new Date(event['timestamp']));
+        } else {
+          currRow.push(event[col.text]);
+        }
       });
       rows.push(currRow);
     });
