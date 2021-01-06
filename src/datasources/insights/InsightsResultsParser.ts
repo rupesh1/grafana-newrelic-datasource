@@ -127,27 +127,35 @@ export class InsightsResultsParser {
       type: 'table',
     };
     const rows: any[] = [];
-    let cols: any[] = [];
+    const cols: any[] = [];
+    const colKeys = new Set();
+    // construct cols
     each(responseData.results[0].events, (event: any) => {
-      cols = [];
-      const currRow: any[] = [];
       each(event, (v: any, k: any) => {
-        if (k === 'timestamp') {
+        if (!colKeys.has(k) && k === 'timestamp') {
+          colKeys.add(k);
           cols.push({
             text: 'Time',
             type: typeof v,
           });
-          currRow.push(v);
         }
       });
       each(event, (v: any, k: any) => {
-        if (k !== 'timestamp') {
+        if (!colKeys.has(k) && k !== 'timestamp') {
+          colKeys.add(k);
           cols.push({
             text: k,
             type: k === 'appId' ? 'string' : typeof v,
           });
-          currRow.push(v);
         }
+      });
+    });
+    // process rows
+    each(responseData.results[0].events, (event: any) => {
+      const currRow: any[] = [];
+      cols.forEach(col => {
+        const v = event[col.text];
+        currRow.push(v);
       });
       rows.push(currRow);
     });
