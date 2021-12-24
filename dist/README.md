@@ -150,3 +150,13 @@ Output in discrete panel
 You can also represent the above output with regular graph panel . Example shown below
 
 ![image](https://user-images.githubusercontent.com/153843/66565866-6c1e7f00-eb5b-11e9-9451-cda7bb10011b.png)
+
+
+# Develop Build Run
+
+```
+docker run --rm -it -p 3000:3000 -v "$(pwd)"/grafana-plugins:/var/lib/grafana/plugins --name=grafana grafana/grafana:7.5.12
+
+yarn install
+yarn build
+```

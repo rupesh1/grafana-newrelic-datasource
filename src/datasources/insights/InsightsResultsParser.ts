@@ -60,7 +60,11 @@ export class InsightsResultsParser {
   }
   private handleMultiColumnFacetResults(metadata: any, facet: any, index: number) {
     each(metadata.contents.timeSeries.contents, (content: any, cindex: number) => {
-      const key = getKey(content);
+      let key = getKey(content);
+      // hack for rate(sum(...)...) queries
+      if (key === 'rate') {
+        key = 'result';
+      }
       const t = (facet.name || index) + ' ' + (content.alias || key);
       const d = facet.timeSeries.map((item: any) => [item.results[cindex][key], item.beginTimeSeconds * 1000]);
       this.pushTimeSeriesResult(t, d);
